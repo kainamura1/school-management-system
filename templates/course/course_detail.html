@@ -1,0 +1,165 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ course.code }} - {{ course.title }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<link rel="stylesheet" href="/static/css/course.css">
+{% endblock %}
+
+{% block content %}
+<div class="course-detail-header">
+    <div class="course-title-section">
+        <h1>{{ course.code }} - {{ course.title }}</h1>
+        <div class="course-meta">
+            <span class="course-credits"><i class="fas fa-graduation-cap me-2"></i>{{ course.credits }} Credits</span>
+            
+            {% if course.lecturers.exists %}
+                {% with lecturer=course.lecturers.first.lecturer %}
+                <span class="course-lecturer"><i class="fas fa-chalkboard-teacher me-2"></i>
+                    {{ lecturer.user.get_full_name|default:lecturer.user.username }}
+                </span>
+                {% endwith %}
+            {% endif %}
+        </div>
+    </div>
+    
+    <div class="course-actions">
+        {% if user.is_authenticated %}
+            {% if user.user_type == 'student' %}
+                {% if user_enrolled %}
+                    <span class="enrolled-badge"><i class="fas fa-check-circle me-2"></i>Enrolled</span>
+                {% else %}
+                    <a href="{% url 'student:enroll_course' course.id %}" class="btn btn-primary">
+                        <i class="fas fa-user-plus me-2"></i>Enroll in this Course
+                    </a>
+                {% endif %}
+            {% elif user.user_type == 'lecturer' and user_teaching %}
+                <a href="{% url 'lecturer:edit_course' course.id %}" class="btn btn-primary">
+                    <i class="fas fa-edit me-2"></i>Manage Course
+                </a>
+            {% endif %}
+        {% else %}
+            <a href="{% url 'accounts:login' %}?next={{ request.path }}" class="btn btn-primary">
+                <i class="fas fa-sign-in-alt me-2"></i>Login to Enroll
+            </a>
+        {% endif %}
+    </div>
+</div>
+
+<div class="course-content">
+    <div class="row">
+        <div class="col-lg-8">
+            <!-- Course Description -->
+            <div class="course-section">
+                <h3><i class="fas fa-info-circle me-2"></i>Course Description</h3>
+                <div class="course-description">
+                    {{ course.description|linebreaks }}
+                </div>
+            </div>
+            
+            <!-- Course Modules -->
+            {% if modules %}
+                <div class="course-section">
+                    <h3><i class="fas fa-list-alt me-2"></i>Course Modules</h3>
+                    
+                    <div class="accordion" id="courseModules">
+                        {% for module in modules %}
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="heading{{ module.id }}">
+                                    <button class="accordion-button collapsed" type="button"
+                                            data-bs-toggle="collapse" data-bs-target="#collapse{{ module.id }}"
+                                            aria-expanded="false" aria-controls="collapse{{ module.id }}">
+                                        <span class="module-number">{{ module.order }}</span>
+                                        {{ module.title }}
+                                    </button>
+                                </h2>
+                                <div id="collapse{{ module.id }}" class="accordion-collapse collapse"
+                                     aria-labelledby="heading{{ module.id }}" data-bs-parent="#courseModules">
+                                    <div class="accordion-body">
+                                        <p>{{ module.description|linebreaks }}</p>
+                                        
+                                        {% if module.materials.exists and user_enrolled %}
+                                            <h5>Learning Materials</h5>
+                                            <ul class="materials-list">
+                                                {% for material in module.materials.all %}
+                                                    <li>
+                                                        <a href="{% url 'student:view_material' material.id %}" class="material-link">
+                                                            <i class="fas fa-file-alt me-2"></i>
+                                                            {{ material.title }}
+                                                        </a>
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                        {% elif module.materials.exists and not user_enrolled %}
+                                            <div class="materials-locked">
+                                                <i class="fas fa-lock"></i>
+                                                <p>Materials are available after enrollment</p>
+                                            </div>
+                                        {% endif %}
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                </div>
+            {% else %}
+                <div class="course-section">
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i>
+                        Course modules will be added soon.
+                    </div>
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="col-lg-4">
+            <!-- Course Sidebar -->
+            <div class="course-sidebar">
+                <div class="enrollment-box">
+                    <h4>Course Information</h4>
+                    <ul class="course-info-list">
+                        <li>
+                            <span class="info-label"><i class="fas fa-calendar-alt me-2"></i>Duration:</span>
+                            <span class="info-value">16 weeks</span>
+                        </li>
+                        <li>
+                            <span class="info-label"><i class="fas fa-users me-2"></i>Enrolled:</span>
+                            <span class="info-value">{{ course.enrollments.count }} students</span>
+                        </li>
+                        <li>
+                            <span class="info-label"><i class="fas fa-book me-2"></i>Modules:</span>
+                            <span class="info-value">{{ modules.count }}</span>
+                        </li>
+                        <li>
+                            <span class="info-label"><i class="fas fa-clock me-2"></i>Last Updated:</span>
+                            <span class="info-value">{{ course.updated_at|date:"M d, Y" }}</span>
+                        </li>
+                    </ul>
+                    
+                    {% if not user.is_authenticated or not user_enrolled %}
+                        <div class="enrollment-cta">
+                            {% if user.is_authenticated and user.user_type == 'student' %}
+                                <a href="{% url 'student:enroll_course' course.id %}" class="btn btn-primary btn-block">
+                                    <i class="fas fa-user-plus me-2"></i>Enroll Now
+                                </a>
+                            {% elif user.is_authenticated %}
+                                <div class="alert alert-info text-center">
+                                    This feature is available for students.
+                                </div>
+                            {% else %}
+                                <a href="{% url 'accounts:login' %}?next={{ request.path }}" class="btn btn-primary btn-block">
+                                    <i class="fas fa-sign-in-alt me-2"></i>Log in to Enroll
+                                </a>
+                                <a href="{% url 'accounts:register' %}" class="btn btn-outline-primary btn-block mt-2">
+                                    <i class="fas fa-user-plus me-2"></i>Register
+                                </a>
+                            {% endif %}
+                        </div>
+                    {% endif %}
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

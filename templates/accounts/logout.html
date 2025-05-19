@@ -1,0 +1,20 @@
+{% extends 'base.html' %}
+
+{% block title %}Logged Out{% endblock %}
+
+{% block content %}
+<div class="container mt-5">
+    <div class="row justify-content-center">
+        <div class="col-md-6">
+            <div class="glass-container text-center">
+                <i class="fas fa-check-circle text-success" style="font-size: 3rem;"></i>
+                <h2 class="mt-3">You have been logged out</h2>
+                <p class="lead">Thank you for using our Student Management System!</p>
+                <a href="{% url 'accounts:login' %}" class="btn btn-primary mt-3">
+                    <i class="fas fa-sign-in-alt me-2"></i>Log in again
+                </a>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

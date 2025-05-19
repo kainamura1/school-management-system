@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Welcome to Student Management System{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<link rel="stylesheet" href="/static/css/home.css">
+{% endblock %}
+
+{% block content %}
+<div class="home-hero">
+    <div class="hero-content">
+        <h1>Student Management System</h1>
+        <p class="lead">A comprehensive platform for managing courses, assignments, and academic progress</p>
+        
+        <div class="hero-buttons mt-4">
+            {% if user.is_authenticated %}
+                {% if user.user_type == 'student' %}
+                    <a href="{% url 'student:dashboard' %}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-tachometer-alt me-2"></i>Go to Student Dashboard
+                    </a>
+                {% elif user.user_type == 'lecturer' %}
+                    <a href="{% url 'lecturer:dashboard' %}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-tachometer-alt me-2"></i>Go to Lecturer Dashboard
+                    </a>
+                {% else %}
+                    <a href="{% url 'accounts:profile' %}" class="btn btn-primary btn-lg">
+                        <i class="fas fa-user me-2"></i>View Your Profile
+                    </a>
+                {% endif %}
+            {% else %}
+                <a href="{% url 'accounts:login' %}" class="btn btn-primary btn-lg me-3">
+                    <i class="fas fa-sign-in-alt me-2"></i>Login
+                </a>
+                <a href="{% url 'accounts:register' %}" class="btn btn-outline-light btn-lg">
+                    <i class="fas fa-user-plus me-2"></i>Register
+                </a>
+            {% endif %}
+        </div>
+    </div>
+</div>
+
+<div class="container mt-5">
+    <div class="row features-section">
+        <div class="col-md-4">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-book"></i>
+                </div>
+                <h3>Course Management</h3>
+                <p>Browse, enroll, and manage your courses all in one place. Access course materials and stay up to date with announcements.</p>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-tasks"></i>
+                </div>
+                <h3>Assignment Tracking</h3>
+                <p>Submit assignments, track deadlines, and receive grades and feedback from your instructors efficiently.</p>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="feature-card">
+                <div class="feature-icon">
+                    <i class="fas fa-chart-line"></i>
+                </div>
+                <h3>Academic Progress</h3>
+                <p>Monitor your academic journey with detailed progress tracking, statistics, and performance analytics.</p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="about-section mt-5">
+        <div class="row align-items-center">
+            <div class="col-lg-6">
+                <h2>About Our Platform</h2>
+                <p>Our Student Management System provides a comprehensive suite of tools to help students and lecturers manage their academic activities efficiently.</p>
+                <p>With our platform, students can access course materials, submit assignments, and track their progress, while lecturers can manage courses, grade assignments, and communicate with students effectively.</p>
+                {% if user.is_authenticated %}
+                    <a href="{% url 'course:course_list' %}" class="btn btn-outline-primary mt-3">Learn More</a>
+                {% else %}
+                    <a href="{% url 'accounts:login' %}?next={% url 'course:course_list' %}" class="btn btn-outline-primary mt-3">
+                        <i class="fas fa-lock me-2"></i>Login to Learn More
+                    </a>
+                {% endif %}
+            </div>
+            <div class="col-lg-6">
+                <div class="about-image-container">
+                    <div class="floating-card card1"></div>
+                    <div class="floating-card card2"></div>
+                    <div class="floating-card card3"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,132 @@
+{% extends 'base.html' %}
+
+{% block title %}Available Courses{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<link rel="stylesheet" href="/static/css/course.css">
+{% endblock %}
+
+{% block content %}
+<div class="courses-header">
+    <div class="row align-items-center">
+        <div class="col-md-8">
+            <h1>Available Courses</h1>
+            <p>Browse and enroll in our available courses</p>
+        </div>
+        <div class="col-md-4">
+            <form method="GET" action="{% url 'course:course_search' %}" class="search-form">
+                <div class="input-group">
+                    <input type="text" name="q" class="form-control" placeholder="Search courses..." aria-label="Search">
+                    <button class="btn btn-primary" type="submit">
+                        <i class="fas fa-search"></i>
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<div class="courses-container">
+    {% if page_obj %}
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            {% for course in page_obj %}
+                <div class="col">
+                    <div class="course-card">
+                        <div class="course-header">
+                            <h4 class="course-code">{{ course.code }}</h4>
+                            <span class="course-credits">{{ course.credits }} Credits</span>
+                        </div>
+                        <div class="course-body">
+                            <h5 class="course-title">{{ course.title }}</h5>
+                            <p class="course-description">{{ course.description|truncatechars:120 }}</p>
+                        </div>
+                        <div class="course-footer">
+                            <a href="{% url 'course:course_detail' course.id %}" class="btn btn-outline-primary">View Details</a>
+                            
+                            {% if user.is_authenticated and user.user_type == 'student' %}
+                                <a href="{% url 'student:enroll_course' course.id %}" class="btn btn-primary">
+                                    <i class="fas fa-user-plus me-1"></i> Enroll
+                                </a>
+                            {% endif %}
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+        
+        <!-- Pagination -->
+        {% if page_obj.has_other_pages %}
+            <nav aria-label="Page navigation" class="mt-4">
+                <ul class="pagination justify-content-center">
+                    {% if page_obj.has_previous %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page=1" aria-label="First">
+                                <span aria-hidden="true">&laquo;&laquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.previous_page_number }}" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" aria-label="First">
+                                <span aria-hidden="true">&laquo;&laquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" aria-label="Previous">
+                                <span aria-hidden="true">&laquo;</span>
+                            </a>
+                        </li>
+                    {% endif %}
+                    
+                    {% for num in page_obj.paginator.page_range %}
+                        {% if num == page_obj.number %}
+                            <li class="page-item active">
+                                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                            </li>
+                        {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ num }}">{{ num }}</a>
+                            </li>
+                        {% endif %}
+                    {% endfor %}
+                    
+                    {% if page_obj.has_next %}
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.next_page_number }}" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item">
+                            <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}" aria-label="Last">
+                                <span aria-hidden="true">&raquo;&raquo;</span>
+                            </a>
+                        </li>
+                    {% else %}
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" aria-label="Next">
+                                <span aria-hidden="true">&raquo;</span>
+                            </a>
+                        </li>
+                        <li class="page-item disabled">
+                            <a class="page-link" href="#" aria-label="Last">
+                                <span aria-hidden="true">&raquo;&raquo;</span>
+                            </a>
+                        </li>
+                    {% endif %}
+                </ul>
+            </nav>
+        {% endif %}
+    {% else %}
+        <div class="no-courses-found">
+            <i class="fas fa-book-open"></i>
+            <h3>No courses available at the moment</h3>
+            <p>Please check back later for new course offerings</p>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

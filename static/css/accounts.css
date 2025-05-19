@@ -1,0 +1,204 @@
+/* Authentication Pages Styling */
+
+/* Glassmorphism card for auth forms */
+.auth-card {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+    padding: 40px;
+    margin-bottom: 30px;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+}
+
+.auth-card::before {
+    content: '';
+    position: absolute;
+    top: -50%;
+    left: -50%;
+    width: 200%;
+    height: 200%;
+    background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, rgba(255,255,255,0) 80%);
+    animation: rotate 15s linear infinite;
+    z-index: -1;
+}
+
+@keyframes rotate {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.auth-card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.2);
+}
+
+/* Auth header styling */
+.auth-header {
+    margin-bottom: 30px;
+}
+
+.auth-icon {
+    font-size: 3rem;
+    color: #3498db;
+    margin-bottom: 15px;
+    background: rgba(52, 152, 219, 0.1);
+    width: 80px;
+    height: 80px;
+    line-height: 80px;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+/* Form elements styling */
+.login-form .form-control,
+.register-form .form-control {
+    border-radius: 8px;
+    padding: 12px 15px;
+    border: 1px solid rgba(0, 0, 0, 0.1);
+    background: rgba(255, 255, 255, 0.8);
+    transition: all 0.3s ease;
+}
+
+.login-form .form-control:focus,
+.register-form .form-control:focus {
+    background: white;
+    box-shadow: 0 0 15px rgba(52, 152, 219, 0.2);
+    border-color: #3498db;
+}
+
+/* Buttons styling */
+.login-form .btn,
+.register-form .btn {
+    border-radius: 8px;
+    padding: 12px 20px;
+    transition: all 0.3s ease;
+}
+
+.login-form .btn-primary,
+.register-form .btn-primary {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    border: none;
+    box-shadow: 0 4px 15px rgba(52, 152, 219, 0.3);
+}
+
+.login-form .btn-primary:hover,
+.register-form .btn-primary:hover {
+    background: linear-gradient(135deg, #2980b9, #3498db);
+    transform: translateY(-2px);
+    box-shadow: 0 8px 20px rgba(52, 152, 219, 0.4);
+}
+
+.login-form .btn-outline-primary,
+.register-form .btn-outline-primary {
+    border: 2px solid #3498db;
+    color: #3498db;
+}
+
+.login-form .btn-outline-primary:hover,
+.register-form .btn-outline-primary:hover {
+    background-color: #3498db;
+    color: white;
+}
+
+/* Auth form separator */
+.auth-separator {
+    position: relative;
+    text-align: center;
+    margin: 30px 0;
+}
+
+.auth-separator::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 0;
+    right: 0;
+    height: 1px;
+    background-color: rgba(0, 0, 0, 0.1);
+}
+
+.auth-separator span {
+    position: relative;
+    display: inline-block;
+    padding: 0 15px;
+    background: rgba(255, 255, 255, 0.8);
+    font-size: 14px;
+    color: #777;
+}
+
+/* Form error styling */
+.auth-card .errorlist {
+    color: #e74c3c;
+    font-size: 0.9rem;
+    list-style-type: none;
+    padding-left: 0;
+    margin-top: 5px;
+}
+
+/* Info badge */
+.info-badge {
+    display: inline-block;
+    background: rgba(52, 152, 219, 0.1);
+    color: #3498db;
+    padding: 8px 15px;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    margin-top: 10px;
+}
+
+/* Water ripple effect on click */
+.auth-card .btn {
+    position: relative;
+    overflow: hidden;
+}
+
+.auth-card .btn::after {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 5px;
+    height: 5px;
+    background: rgba(255, 255, 255, 0.5);
+    opacity: 0;
+    border-radius: 100%;
+    transform: scale(1, 1) translate(-50%, -50%);
+    transform-origin: 50% 50%;
+}
+
+.auth-card .btn:focus:not(:active)::after {
+    animation: ripple 1s ease-out;
+}
+
+@keyframes ripple {
+    0% {
+        transform: scale(0, 0);
+        opacity: 0.5;
+    }
+    20% {
+        transform: scale(25, 25);
+        opacity: 0.3;
+    }
+    100% {
+        opacity: 0;
+        transform: scale(40, 40);
+    }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .auth-card {
+        padding: 25px;
+    }
+    
+    .auth-icon {
+        width: 60px;
+        height: 60px;
+        line-height: 60px;
+        font-size: 2rem;
+    }
+}

@@ -1,0 +1,144 @@
+{% extends 'base.html' %}
+
+{% block title %}About Us | Student Management System{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<link rel="stylesheet" href="/static/css/about.css">
+{% endblock %}
+
+{% block content %}
+<div class="about-header">
+    <h1>About Our Platform</h1>
+    <p class="lead">Empowering education through technology</p>
+</div>
+
+<div class="about-section">
+    <div class="row">
+        <div class="col-lg-6">
+            <div class="about-content">
+                <h2>Our Mission</h2>
+                <p>
+                    At Student Management System, our mission is to provide a comprehensive, 
+                    user-friendly platform that enhances the educational experience for both 
+                    students and educators. We strive to simplify administrative tasks, 
+                    facilitate communication, and promote academic excellence.
+                </p>
+                
+                <h2 class="mt-4">Our Story</h2>
+                <p>
+                    Founded in 2023, our platform was developed by a team of educators and 
+                    software engineers who recognized the need for a more efficient way to 
+                    manage academic activities. We set out to create a system that would 
+                    streamline course management, assignment tracking, and progress monitoring.
+                </p>
+                <p>
+                    Today, our platform serves thousands of students and educators, providing 
+                    them with the tools they need to succeed in their academic journeys.
+                </p>
+                
+                <div class="mt-4">
+                    <a href="{% url 'accounts:register' %}" class="btn btn-primary">
+                        <i class="fas fa-user-plus me-2"></i>Join Us Today
+                    </a>
+                    <a href="{% url 'accounts:contact' %}" class="btn btn-outline-primary ms-2">
+                        <i class="fas fa-envelope me-2"></i>Get in Touch
+                    </a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-lg-6">
+            <div class="about-image-container">
+                <div class="about-image"></div>
+                <div class="image-overlay"></div>
+            </div>
+            
+            <div class="key-features mt-4">
+                <h3>Key Features</h3>
+                <div class="feature-grid">
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-user-shield"></i>
+                        </div>
+                        <h4>Secure</h4>
+                        <p>Your data is always protected</p>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <h4>Responsive</h4>
+                        <p>Works on all devices</p>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-bolt"></i>
+                        </div>
+                        <h4>Fast</h4>
+                        <p>Optimized for performance</p>
+                    </div>
+                    
+                    <div class="feature-item">
+                        <div class="feature-icon">
+                            <i class="fas fa-cogs"></i>
+                        </div>
+                        <h4>Customizable</h4>
+                        <p>Tailored to your needs</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="team-section">
+    <h2 class="text-center mb-5">Meet Our Team</h2>
+    
+    <div class="row">
+        <div class="col-md-4">
+            <div class="team-member">
+                <div class="member-image">
+                    <div class="member-placeholder">JD</div>
+                </div>
+                <h4>John Doe</h4>
+                <p class="member-title">Founder & CEO</p>
+                <p class="member-bio">
+                    With over 15 years of experience in education technology, John leads 
+                    our vision and strategic direction.
+                </p>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="team-member">
+                <div class="member-image">
+                    <div class="member-placeholder">JS</div>
+                </div>
+                <h4>Jane Smith</h4>
+                <p class="member-title">Lead Developer</p>
+                <p class="member-bio">
+                    Jane oversees all technical aspects of our platform, ensuring 
+                    a seamless and efficient user experience.
+                </p>
+            </div>
+        </div>
+        
+        <div class="col-md-4">
+            <div class="team-member">
+                <div class="member-image">
+                    <div class="member-placeholder">RJ</div>
+                </div>
+                <h4>Robert Johnson</h4>
+                <p class="member-title">Education Specialist</p>
+                <p class="member-bio">
+                    With a background in pedagogy, Robert ensures our platform meets 
+                    the needs of modern educational institutions.
+                </p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

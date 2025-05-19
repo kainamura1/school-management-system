@@ -1,0 +1,46 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Grade Assignment{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="glass-container">
+                <h2 class="mb-4">Grade Assignment</h2>
+                
+                <div class="mb-4">
+                    <h5>{{ assignment.title }}</h5>
+                    <p class="text-muted">
+                        Submitted by: {{ assignment.student.user.get_full_name|default:assignment.student.user.username }}<br>
+                        Course: {{ assignment.course.code }} - {{ assignment.course.title }}<br>
+                        Submitted on: {{ assignment.submitted_at|date:"F d, Y, g:i A" }}
+                    </p>
+                    
+                    <div class="mb-3">
+                        <a href="{{ assignment.submission.url }}" class="btn btn-outline-primary" target="_blank">
+                            <i class="fas fa-download"></i> View Submission
+                        </a>
+                    </div>
+                </div>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    {{ form|crispy }}
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> The student will be notified once you submit the grade.
+                    </div>
+                    
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{% url 'lecturer:manage_assignments' assignment.course.id %}" class="btn btn-outline-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Submit Grade</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

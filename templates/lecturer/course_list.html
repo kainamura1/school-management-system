@@ -1,0 +1,50 @@
+{% extends 'base.html' %}
+
+{% block title %}My Courses{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>My Courses</h1>
+        <a href="{% url 'lecturer:create_course' %}" class="btn btn-primary">
+            <i class="fas fa-plus"></i> Create New Course
+        </a>
+    </div>
+
+    {% if lecturer_courses %}
+        <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+            {% for lc in lecturer_courses %}
+                <div class="col">
+                    <div class="card h-100">
+                        <div class="card-header bg-primary text-white">
+                            {{ lc.course.code }}
+                            {% if lc.is_primary %}
+                                <span class="badge bg-warning float-end">Primary</span>
+                            {% endif %}
+                        </div>
+                        <div class="card-body">
+                            <h5 class="card-title">{{ lc.course.title }}</h5>
+                            <p class="card-text text-truncate">{{ lc.course.description }}</p>
+                            <div class="d-flex justify-content-between">
+                                <span class="badge bg-info text-dark">{{ lc.course.credits }} Credits</span>
+                                <span class="badge bg-success">{{ lc.enrollment_count }} Students</span>
+                            </div>
+                        </div>
+                        <div class="card-footer">
+                            <a href="{% url 'lecturer:course_detail' lc.course.id %}" class="btn btn-sm btn-outline-primary">Manage</a>
+                            <a href="{% url 'lecturer:student_list' lc.course.id %}" class="btn btn-sm btn-outline-success">Students</a>
+                            <a href="{% url 'lecturer:manage_assignments' lc.course.id %}" class="btn btn-sm btn-outline-warning">Assignments</a>
+                        </div>
+                    </div>
+                </div>
+            {% endfor %}
+        </div>
+    {% else %}
+        <div class="glass-container text-center py-5">
+            <h3>You haven't been assigned to any courses yet.</h3>
+            <p>Click the button below to create your first course.</p>
+            <a href="{% url 'lecturer:create_course' %}" class="btn btn-primary mt-3">Create Course</a>
+        </div>
+    {% endif %}
+</div>
+{% endblock %}

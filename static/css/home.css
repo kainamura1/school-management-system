@@ -1,0 +1,220 @@
+/* Home page styling */
+
+.home-hero {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    color: white;
+    padding: 80px 30px;
+    border-radius: 15px;
+    position: relative;
+    overflow: hidden;
+    text-align: center;
+    margin-bottom: 50px;
+}
+
+.home-hero::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('/static/img/pattern.svg');
+    background-size: cover;
+    opacity: 0.1;
+    z-index: 1;
+}
+
+.hero-content {
+    position: relative;
+    z-index: 2;
+}
+
+.home-hero h1 {
+    font-size: 3.5rem;
+    font-weight: 700;
+    margin-bottom: 20px;
+    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+}
+
+.home-hero .lead {
+    font-size: 1.4rem;
+    max-width: 700px;
+    margin: 0 auto;
+    opacity: 0.9;
+}
+
+.hero-buttons .btn {
+    padding: 12px 30px;
+    border-radius: 50px;
+    font-weight: 600;
+    transition: all 0.3s ease;
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+}
+
+.hero-buttons .btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 25px rgba(0, 0, 0, 0.3);
+}
+
+.hero-buttons .btn-outline-light {
+    background-color: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(5px);
+}
+
+/* Features section */
+.features-section {
+    margin-bottom: 70px;
+}
+
+.feature-card {
+    background: rgba(255, 255, 255, 0.7);
+    backdrop-filter: blur(10px);
+    border-radius: 15px;
+    padding: 30px;
+    text-align: center;
+    height: 100%;
+    transition: all 0.3s ease;
+    box-shadow: 0 8px 32px 0 rgba(31, 38, 135, 0.15);
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.feature-card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.15);
+}
+
+.feature-icon {
+    width: 80px;
+    height: 80px;
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    color: white;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto 20px;
+}
+
+.feature-icon i {
+    font-size: 30px;
+}
+
+.feature-card h3 {
+    margin-bottom: 15px;
+    font-weight: 600;
+}
+
+.feature-card p {
+    color: #555;
+    line-height: 1.6;
+}
+
+/* About section */
+.about-section {
+    padding: 50px 0;
+}
+
+.about-section h2 {
+    font-weight: 700;
+    margin-bottom: 20px;
+    color: #2980b9;
+}
+
+.about-section p {
+    color: #555;
+    line-height: 1.7;
+    margin-bottom: 15px;
+}
+
+/* About image with floating cards animation */
+.about-image-container {
+    height: 350px;
+    position: relative;
+    perspective: 1000px;
+}
+
+.floating-card {
+    position: absolute;
+    width: 200px;
+    height: 280px;
+    border-radius: 15px;
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+}
+
+.card1 {
+    background: linear-gradient(135deg, #3498db, #2980b9);
+    top: 10%;
+    left: 10%;
+    z-index: 3;
+    animation: float1 6s ease-in-out infinite;
+}
+
+.card2 {
+    background: linear-gradient(135deg, #2ecc71, #27ae60);
+    top: 20%;
+    left: 30%;
+    z-index: 2;
+    animation: float2 8s ease-in-out infinite;
+}
+
+.card3 {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    top: 5%;
+    left: 55%;
+    z-index: 1;
+    animation: float3 7s ease-in-out infinite;
+}
+
+@keyframes float1 {
+    0% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-20px) rotate(5deg); }
+    100% { transform: translateY(0) rotate(0deg); }
+}
+
+@keyframes float2 {
+    0% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-15px) rotate(-3deg); }
+    100% { transform: translateY(0) rotate(0deg); }
+}
+
+@keyframes float3 {
+    0% { transform: translateY(0) rotate(0deg); }
+    50% { transform: translateY(-25px) rotate(2deg); }
+    100% { transform: translateY(0) rotate(0deg); }
+}
+
+/* Responsive adjustments */
+@media (max-width: 768px) {
+    .home-hero h1 {
+        font-size: 2.5rem;
+    }
+    
+    .home-hero .lead {
+        font-size: 1.2rem;
+    }
+    
+    .hero-buttons .btn {
+        display: block;
+        width: 100%;
+        margin-bottom: 15px;
+    }
+    
+    .hero-buttons .btn-lg {
+        font-size: 1rem;
+        padding: 10px 20px;
+    }
+    
+    .feature-card {
+        margin-bottom: 30px;
+    }
+    
+    .about-image-container {
+        height: 250px;
+        margin-top: 40px;
+    }
+    
+    .floating-card {
+        width: 150px;
+        height: 210px;
+    }
+}

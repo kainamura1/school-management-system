@@ -1,0 +1,65 @@
+{% extends 'base.html' %}
+
+{% block title %}Students - {{ course.code }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Students: {{ course.code }} - {{ course.title }}</h1>
+        <a href="{% url 'lecturer:course_detail' course.id %}" class="btn btn-outline-secondary">
+            Back to Course
+        </a>
+    </div>
+
+    <div class="glass-container">
+        {% if enrollments %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Student</th>
+                            <th>Registration Number</th>
+                            <th>Department</th>
+                            <th>Year of Study</th>
+                            <th>Enrollment Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for enrollment in enrollments %}
+                            <tr>
+                                <td>
+                                    <div class="d-flex align-items-center">
+                                        {% if enrollment.student.user.profile_picture %}
+                                            <img src="{{ enrollment.student.user.profile_picture.url }}" alt="Profile" 
+                                                class="rounded-circle me-2" width="32" height="32">
+                                        {% else %}
+                                            <div class="rounded-circle bg-secondary text-white me-2 d-flex align-items-center justify-content-center" 
+                                                style="width: 32px; height: 32px;">
+                                                {{ enrollment.student.user.username|first|upper }}
+                                            </div>
+                                        {% endif %}
+                                        {{ enrollment.student.user.get_full_name|default:enrollment.student.user.username }}
+                                    </div>
+                                </td>
+                                <td>{{ enrollment.student.registration_number }}</td>
+                                <td>{{ enrollment.student.department }}</td>
+                                <td>{{ enrollment.student.year_of_study }}</td>
+                                <td>{{ enrollment.enrollment_date|date:"M d, Y" }}</td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <div class="text-muted mt-3">
+                Total Students: {{ enrollments|length }}
+            </div>
+        {% else %}
+            <div class="alert alert-info text-center py-4">
+                <h4>No students are enrolled in this course yet.</h4>
+                <p>Students will appear here after they enroll in this course.</p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

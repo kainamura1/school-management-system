@@ -1,0 +1,341 @@
+{% extends 'base.html' %}
+
+{% block title %}Student Dashboard{% endblock %}
+
+{% block extra_css %}
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&family=Quicksand:wght@400;500;600&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="/static/css/student_dashboard.css">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Welcome Section with Glassmorphism -->
+    <div class="welcome-section">
+        <div class="row">
+            <div class="col-md-8">
+                <h1>Welcome, {{ user.first_name|default:user.username }}</h1>
+                <p class="lead">Student Dashboard | {{ student_profile.department }}</p>
+                <p>Registration Number: {{ student_profile.registration_number }} | Year {{ student_profile.year_of_study }}</p>
+            </div>
+            <div class="col-md-4 text-end">
+                <a href="{% url 'student:profile' %}" class="btn btn-outline-primary action-button me-2">
+                    <i class="fas fa-user-circle me-1"></i> My Profile
+                </a>
+                <a href="{% url 'student:course_list' %}" class="btn btn-primary action-button">
+                    <i class="fas fa-book me-1"></i> Browse Courses
+                </a>
+            </div>
+        </div>
+        
+        <!-- Quick Action Buttons -->
+        <div class="quick-actions">
+            <a href="{% url 'student:course_list' %}" class="quick-action-item">
+                <i class="fas fa-book text-primary"></i>
+                <div>My Courses</div>
+            </a>
+            <a href="{% url 'student:assignment_list' %}" class="quick-action-item">
+                <i class="fas fa-tasks text-warning"></i>
+                <div>Assignments</div>
+            </a>
+            <a href="{% url 'student:view_notifications' %}" class="quick-action-item">
+                <i class="fas fa-bell text-danger position-relative">
+                    {% with unread_count=user.notifications.filter.count %}
+                        {% if unread_count > 0 %}
+                            <span class="notification-badge">{{ unread_count }}</span>
+                        {% endif %}
+                    {% endwith %}
+                </i>
+                <div>Notifications</div>
+            </a>
+            <a href="{% url 'accounts:profile' %}" class="quick-action-item">
+                <i class="fas fa-cog text-secondary"></i>
+                <div>Settings</div>
+            </a>
+        </div>
+    </div>
+
+    <!-- Stats Cards -->
+    <div class="dashboard-stats mb-5">
+        <div class="stat-card water-bg">
+            <i class="fas fa-book fa-2x text-primary"></i>
+            <h3 class="counter">{{ enrolled_course_count }}</h3>
+            <p>Enrolled Courses</p>
+        </div>
+        <div class="stat-card water-bg">
+            <i class="fas fa-tasks fa-2x text-warning"></i>
+            <h3 class="counter">{{ assignments.count }}</h3>
+            <p>Assignments</p>
+        </div>
+        <div class="stat-card water-bg">
+            <i class="fas fa-hourglass-half fa-2x text-success"></i>
+            <h3 class="counter">{{ pending_enrollments }}</h3>
+            <p>Pending Enrollments</p>
+        </div>
+        <div class="stat-card water-bg">
+            <i class="fas fa-bullhorn fa-2x text-info"></i>
+            <h3 class="counter">{{ announcements.count }}</h3>
+            <p>Announcements</p>
+        </div>
+    </div>
+
+    <div class="row">
+        <!-- Enrolled Courses -->
+        <div class="col-md-6">
+            <div class="glass-container">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4><i class="fas fa-book-open me-2"></i>My Courses</h4>
+                    <a href="{% url 'student:course_list' %}" class="btn btn-sm btn-outline-primary rounded-pill">
+                        Browse More <i class="fas fa-arrow-right ms-1"></i>
+                    </a>
+                </div>
+                
+                {% if enrollments %}
+                    <div class="list-group">
+                        {% for enrollment in enrollments %}
+                            <a href="{% url 'student:course_detail' enrollment.course.id %}" class="list-group-item list-group-item-action">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h5 class="mb-1">{{ enrollment.course.code }} - {{ enrollment.course.title }}</h5>
+                                    <span class="badge bg-primary rounded-pill">{{ enrollment.course.credits }}</span>
+                                </div>
+                                <p class="mb-1 text-truncate">{{ enrollment.course.description }}</p>
+                                <small class="text-muted">Enrolled: {{ enrollment.enrollment_date|date:"M d, Y" }}</small>
+                            </a>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i> You're not enrolled in any courses yet.
+                        <a href="{% url 'student:course_list' %}" class="alert-link">Browse available courses</a>
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+
+        <!-- Recent Announcements -->
+        <div class="col-md-6">
+            <div class="glass-container">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h4><i class="fas fa-bullhorn me-2"></i>Recent Announcements</h4>
+                </div>
+                
+                {% if announcements %}
+                    <div class="list-group">
+                        {% for announcement in announcements %}
+                            <div class="list-group-item">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h5 class="mb-1">{{ announcement.title }}</h5>
+                                    <small>{{ announcement.posted_at|date:"M d, Y" }}</small>
+                                </div>
+                                <p class="mb-1 text-truncate">{{ announcement.content }}</p>
+                                <small>Course: {{ announcement.course.code }} - {{ announcement.course.title }}</small>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i> No announcements available.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+    
+    <!-- Assignments Section -->
+    <div class="glass-container mt-4">
+        <div class="d-flex justify-content-between align-items-center mb-3">
+            <h4><i class="fas fa-tasks me-2"></i>Recent Assignments</h4>
+            <a href="{% url 'student:assignment_list' %}" class="btn btn-sm btn-outline-primary rounded-pill">
+                View All <i class="fas fa-arrow-right ms-1"></i>
+            </a>
+        </div>
+        
+        {% if assignments %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Title</th>
+                            <th>Course</th>
+                            <th>Submitted</th>
+                            <th>Status</th>
+                            <th>Score</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for assignment in assignments %}
+                            <tr>
+                                <td>{{ assignment.title }}</td>
+                                <td>{{ assignment.course.code }}</td>
+                                <td>{{ assignment.submitted_at|date:"M d, Y" }}</td>
+                                <td>
+                                    {% if assignment.score is not None %}
+                                        <span class="badge bg-success">Graded</span>
+                                    {% else %}
+                                        <span class="badge bg-warning">Pending</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if assignment.score is not None %}
+                                        {{ assignment.score }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+        {% else %}
+            <div class="alert alert-info">
+                <i class="fas fa-info-circle me-2"></i> You haven't submitted any assignments yet.
+            </div>
+        {% endif %}
+    </div>
+    
+    <!-- Academic Progress Section -->
+    <div class="row mt-4">
+        <!-- Calendar & Upcoming Events -->
+        <div class="col-md-7">
+            <div class="glass-container calendar-container">
+                <h4><i class="fas fa-calendar-alt me-2"></i>Academic Calendar</h4>
+                <div class="calendar-wrapper">
+                    <div class="month-header d-flex justify-content-between align-items-center">
+                        <button class="btn btn-sm btn-outline-primary" id="prevMonth"><i class="fas fa-chevron-left"></i></button>
+                        <h5 id="currentMonth">Loading calendar...</h5>
+                        <button class="btn btn-sm btn-outline-primary" id="nextMonth"><i class="fas fa-chevron-right"></i></button>
+                    </div>
+                    <div class="weekdays-header d-flex">
+                        <div>Sun</div>
+                        <div>Mon</div>
+                        <div>Tue</div>
+                        <div>Wed</div>
+                        <div>Thu</div>
+                        <div>Fri</div>
+                        <div>Sat</div>
+                    </div>
+                    <div class="calendar-days" id="calendarDays">
+                        <!-- Calendar days will be inserted by JavaScript -->
+                    </div>
+                </div>
+                
+                <h5 class="mt-4 mb-3">Upcoming Events</h5>
+                <div class="upcoming-events" id="upcomingEvents">
+                    <!-- Events will be populated by JavaScript -->
+                </div>
+            </div>
+        </div>
+        
+        <!-- Progress & Achievements -->
+        <div class="col-md-5">
+            <div class="glass-container">
+                <h4><i class="fas fa-award me-2"></i>Progress & Achievements</h4>
+                
+                <!-- Academic Progress -->
+                <div class="progress-section mb-4">
+                    <h5 class="mb-3">Current Semester Progress</h5>
+                    <div class="progress-item">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span>Overall Completion</span>
+                            <span id="overallProgress">65%</span>
+                        </div>
+                        <div class="progress">
+                            <div class="progress-bar bg-success" role="progressbar" style="width: 65%" aria-valuenow="65" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                    
+                    <div class="progress-item mt-3">
+                        <div class="d-flex justify-content-between mb-1">
+                            <span>Assignments Completed</span>
+                            <span>{{ completed_assignment_count|default:"0" }}/{{ assignment_count|default:"0" }}</span>
+                        </div>
+                        <div class="progress">
+                            <div id="assignmentProgressBar" class="progress-bar bg-primary" role="progressbar" style="width: 0%" aria-valuenow="0" aria-valuemin="0" aria-valuemax="100"></div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Recent Achievements -->
+                <div class="achievements-section">
+                    <h5 class="mb-3">Recent Achievements</h5>
+                    <div class="achievement-list" id="achievementsList">
+                        <!-- Achievements will be populated dynamically -->
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Recent Activity Timeline -->
+    <div class="glass-container mt-4">
+        <h4><i class="fas fa-history me-2"></i>Recent Activity</h4>
+        <div class="timeline" id="activityTimeline">
+            <!-- Timeline items will be populated dynamically -->
+        </div>
+    </div>
+</div>
+
+{% block extra_js %}
+<!-- Pass data from Django to JavaScript -->
+<script>
+    // Initialize dashboard data for dynamic content
+    const dashboardData = {
+        // Academic progress information
+        progress: {
+            semesterCompletion: {{ semester_completion|default:"65" }},
+            assignmentsCompleted: {{ completed_assignment_count|default:"0" }},
+            totalAssignments: {{ assignment_count|default:"0" }}
+        },
+        
+        // Courses with due dates for calendar events
+        courses: [
+            {% for enrollment in enrollments %}
+            {
+                id: {{ enrollment.course.id }},
+                code: "{{ enrollment.course.code }}",
+                title: "{{ enrollment.course.title }}",
+                enrollmentDate: "{{ enrollment.enrollment_date|date:'Y-m-d' }}"
+            }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ],
+        
+        // Assignments for upcoming events and calendar
+        assignments: [
+            {% for assignment in assignments %}
+            {
+                id: {{ assignment.id }},
+                title: "{{ assignment.title }}",
+                course: "{{ assignment.course.code }}",
+                submittedDate: "{{ assignment.submitted_at|date:'Y-m-d' }}",
+                status: "{% if assignment.score is not None %}graded{% else %}pending{% endif %}",
+                score: {% if assignment.score is not None %}{{ assignment.score }}{% else %}null{% endif %}
+            }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ],
+        
+        // Announcements for activity timeline
+        announcements: [
+            {% for announcement in announcements %}
+            {
+                id: {{ announcement.id }},
+                title: "{{ announcement.title }}",
+                course: "{{ announcement.course.code }}",
+                date: "{{ announcement.posted_at|date:'Y-m-d' }}"
+            }{% if not forloop.last %},{% endif %}
+            {% endfor %}
+        ],
+        
+        // User profile info
+        student: {
+            name: "{{ user.get_full_name|default:user.username }}",
+            registrationNumber: "{{ student_profile.registration_number }}",
+            department: "{{ student_profile.department }}",
+            yearOfStudy: {{ student_profile.year_of_study }}
+        }
+    };
+</script>
+<script src="/static/js/student_dashboard.js"></script>
+{% endblock %}
+{% endblock %}

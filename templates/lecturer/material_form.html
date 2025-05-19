@@ -1,0 +1,36 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Add Learning Material{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="glass-container">
+                <h2 class="mb-4">Add Learning Material</h2>
+                <p class="text-muted">
+                    Module: <strong>{{ module.title }}</strong> | 
+                    Course: <strong>{{ course.code }} - {{ course.title }}</strong>
+                </p>
+                
+                <form method="post" enctype="multipart/form-data">
+                    {% csrf_token %}
+                    
+                    {{ form|crispy }}
+                    
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle"></i> Supported file types include PDFs, documents, presentations, 
+                        images, videos, and other common learning material formats.
+                    </div>
+                    
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{% url 'lecturer:manage_modules' course.id %}" class="btn btn-outline-secondary">Cancel</a>
+                        <button type="submit" class="btn btn-primary">Upload Material</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

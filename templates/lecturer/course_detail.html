@@ -1,0 +1,206 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ course.code }} - {{ course.title }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Course Header -->
+    <div class="glass-container mb-4">
+        <div class="d-flex justify-content-between align-items-start">
+            <div>
+                <h1>{{ course.code }} - {{ course.title }}</h1>
+                <p class="lead">{{ course.description }}</p>
+                <div class="mb-3">
+                    <span class="badge bg-primary">{{ course.credits }} Credits</span>
+                    <span class="badge bg-success">{{ enrollments.count }} Students</span>
+                    <span class="badge {% if pending_assignments > 0 %}bg-warning{% else %}bg-info{% endif %}">
+                        {{ pending_assignments }} Pending Assignments
+                    </span>
+                </div>
+            </div>
+            <div class="btn-group">
+                <a href="{% url 'lecturer:edit_course' course.id %}" class="btn btn-outline-primary">
+                    <i class="fas fa-edit"></i> Edit
+                </a>
+                <a href="{% url 'lecturer:student_list' course.id %}" class="btn btn-outline-success">
+                    <i class="fas fa-users"></i> Students
+                </a>
+                <a href="{% url 'lecturer:manage_assignments' course.id %}" class="btn btn-outline-warning">
+                    <i class="fas fa-tasks"></i> Assignments
+                </a>
+                <a href="{% url 'lecturer:create_assignment' course.id %}" class="btn btn-outline-info">
+                    <i class="fas fa-plus-circle"></i> New Assignment
+                </a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row">
+        <!-- Course Modules -->
+        <div class="col-md-8">
+            <div class="glass-container mb-4">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3>Course Modules</h3>
+                    <div>
+                        <a href="{% url 'lecturer:manage_modules' course.id %}" class="btn btn-sm btn-outline-primary">
+                            Manage Modules
+                        </a>
+                        <a href="{% url 'lecturer:create_module' course.id %}" class="btn btn-sm btn-primary">
+                            <i class="fas fa-plus"></i> Add Module
+                        </a>
+                    </div>
+                </div>
+                
+                {% if modules %}
+                    <div class="accordion" id="modulesAccordion">
+                        {% for module in modules %}
+                            <div class="accordion-item">
+                                <h2 class="accordion-header" id="heading{{ module.id }}">
+                                    <button class="accordion-button collapsed" type="button" data-bs-toggle="collapse" 
+                                            data-bs-target="#collapse{{ module.id }}" aria-expanded="false" 
+                                            aria-controls="collapse{{ module.id }}">
+                                        <strong>{{ module.order }}. {{ module.title }}</strong>
+                                    </button>
+                                </h2>
+                                <div id="collapse{{ module.id }}" class="accordion-collapse collapse" 
+                                     aria-labelledby="heading{{ module.id }}" data-bs-parent="#modulesAccordion">
+                                    <div class="accordion-body">
+                                        <p>{{ module.description }}</p>
+                                        
+                                        {% if module.materials.exists %}
+                                            <h5 class="mt-3">Learning Materials</h5>
+                                            <ul class="list-group">
+                                                {% for material in module.materials.all %}
+                                                    <li class="list-group-item d-flex justify-content-between align-items-center">
+                                                        <div>
+                                                            <strong>{{ material.title }}</strong>
+                                                            {% if material.description %}
+                                                                <p class="mb-0 text-muted">{{ material.description }}</p>
+                                                            {% endif %}
+                                                        </div>
+                                                        <a href="{{ material.file.url }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                                                            <i class="fas fa-download"></i> Download
+                                                        </a>
+                                                    </li>
+                                                {% endfor %}
+                                            </ul>
+                                        {% endif %}
+                                        
+                                        <div class="mt-3">
+                                            <a href="{% url 'lecturer:add_material' module.id %}" class="btn btn-sm btn-primary">
+                                                <i class="fas fa-plus"></i> Add Material
+                                            </a>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        No modules have been created for this course yet.
+                        <a href="{% url 'lecturer:create_module' course.id %}">Create your first module</a>
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- Course Announcements -->
+            <div class="glass-container">
+                <div class="d-flex justify-content-between align-items-center mb-3">
+                    <h3>Announcements</h3>
+                    <a href="{% url 'lecturer:create_announcement' course.id %}" class="btn btn-primary">
+                        <i class="fas fa-bullhorn"></i> New Announcement
+                    </a>
+                </div>
+                
+                {% if announcements %}
+                    <div class="list-group">
+                        {% for announcement in announcements %}
+                            <div class="list-group-item">
+                                <div class="d-flex w-100 justify-content-between">
+                                    <h5 class="mb-1">{{ announcement.title }}</h5>
+                                    <small>{{ announcement.posted_at|date:"M d, Y" }}</small>
+                                </div>
+                                <p class="mb-1">{{ announcement.content }}</p>
+                                {% if announcement.attachment %}
+                                    <a href="{{ announcement.attachment.url }}" class="btn btn-sm btn-outline-primary mt-2" target="_blank">
+                                        <i class="fas fa-paperclip"></i> Attachment
+                                    </a>
+                                {% endif %}
+                            </div>
+                        {% endfor %}
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        No announcements have been made for this course yet.
+                    </div>
+                {% endif %}
+            </div>
+        </div>
+        
+        <!-- Sidebar -->
+        <div class="col-md-4">
+            <!-- Recent Enrollments -->
+            <div class="glass-container mb-4">
+                <h4>Recent Enrollments</h4>
+                
+                {% if enrollments %}
+                    <div class="list-group">
+                        {% for enrollment in enrollments|slice:":5" %}
+                            <div class="list-group-item">
+                                <div class="d-flex align-items-center">
+                                    {% if enrollment.student.user.profile_picture %}
+                                        <img src="{{ enrollment.student.user.profile_picture.url }}" alt="Profile" class="rounded-circle me-2" width="32" height="32">
+                                    {% else %}
+                                        <div class="rounded-circle bg-secondary text-white me-2 d-flex align-items-center justify-content-center" style="width: 32px; height: 32px;">
+                                            {{ enrollment.student.user.username|first|upper }}
+                                        </div>
+                                    {% endif %}
+                                    <div>
+                                        <strong>{{ enrollment.student.user.get_full_name|default:enrollment.student.user.username }}</strong>
+                                        <div class="text-muted small">{{ enrollment.student.registration_number }}</div>
+                                    </div>
+                                </div>
+                            </div>
+                        {% endfor %}
+                    </div>
+                    
+                    {% if enrollments.count > 5 %}
+                        <div class="text-center mt-3">
+                            <a href="{% url 'lecturer:student_list' course.id %}" class="btn btn-sm btn-outline-primary">
+                                View All Students
+                            </a>
+                        </div>
+                    {% endif %}
+                {% else %}
+                    <div class="alert alert-info">
+                        No students are enrolled in this course yet.
+                    </div>
+                {% endif %}
+            </div>
+            
+            <!-- Quick Actions -->
+            <div class="glass-container">
+                <h4>Quick Actions</h4>
+                <div class="list-group">
+                    <a href="{% url 'lecturer:create_announcement' course.id %}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-bullhorn"></i> Post Announcement
+                    </a>
+                    <a href="{% url 'lecturer:create_module' course.id %}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-plus"></i> Add Module
+                    </a>
+                    <a href="{% url 'lecturer:manage_assignments' course.id %}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-tasks"></i> Grade Assignments 
+                        {% if pending_assignments > 0 %}
+                            <span class="badge bg-warning float-end">{{ pending_assignments }}</span>
+                        {% endif %}
+                    </a>
+                    <a href="{% url 'lecturer:student_list' course.id %}" class="list-group-item list-group-item-action">
+                        <i class="fas fa-users"></i> View Students
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

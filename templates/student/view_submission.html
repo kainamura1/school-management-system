@@ -1,0 +1,88 @@
+{% extends 'base.html' %}
+
+{% block title %}Assignment Submission - {{ course.code }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="/static/css/student.css">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="glass-container">
+                <h2 class="mb-3">Assignment Submission</h2>
+                <p class="text-muted mb-4">Course: {{ course.code }} - {{ course.title }}</p>
+                
+                <div class="submission-details mb-4">
+                    <div class="row mb-3">
+                        <div class="col-md-3"><strong>Assignment:</strong></div>
+                        <div class="col-md-9">{{ announcement.title|slice:"15:" }}</div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-3"><strong>Submitted:</strong></div>
+                        <div class="col-md-9">{{ assignment.submitted_at }}</div>
+                    </div>
+                    
+                    <div class="row mb-3">
+                        <div class="col-md-3"><strong>Status:</strong></div>
+                        <div class="col-md-9">
+                            {% if assignment.score is not None %}
+                                <span class="badge bg-success">Graded</span>
+                            {% else %}
+                                <span class="badge bg-warning">Pending</span>
+                            {% endif %}
+                        </div>
+                    </div>
+                    
+                    {% if assignment.score is not None %}
+                        <div class="row mb-3">
+                            <div class="col-md-3"><strong>Score:</strong></div>
+                            <div class="col-md-9">{{ assignment.score }}</div>
+                        </div>
+                        
+                        {% if assignment.feedback %}
+                            <div class="row mb-3">
+                                <div class="col-md-3"><strong>Feedback:</strong></div>
+                                <div class="col-md-9">{{ assignment.feedback }}</div>
+                            </div>
+                        {% endif %}
+                    {% endif %}
+                </div>
+                
+                <div class="submission-file">
+                    <h5 class="mb-3">Submitted File</h5>
+                    <div class="file-preview p-3 bg-light rounded">
+                        <i class="fas fa-file-alt me-2"></i> {{ assignment.submission.name|slice:"12:" }}
+                        <a href="{{ assignment.submission.url }}" class="btn btn-sm btn-primary float-end" target="_blank">
+                            <i class="fas fa-download me-1"></i> Download
+                        </a>
+                    </div>
+                </div>
+                
+                <div class="assignment-instructions mt-4">
+                    <h5 class="mb-3">Assignment Instructions</h5>
+                    <div class="p-3 bg-light rounded">
+                        {{ announcement.content|linebreaks }}
+                        
+                        {% if announcement.attachment %}
+                            <div class="mt-3">
+                                <a href="{{ announcement.attachment.url }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                                    <i class="fas fa-file-download me-1"></i> Download Instructions
+                                </a>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+                
+                <div class="mt-4">
+                    <a href="{% url 'student:course_detail' course.id %}" class="btn btn-outline-secondary">
+                        <i class="fas fa-arrow-left me-1"></i> Back to Course
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

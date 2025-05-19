@@ -1,0 +1,87 @@
+{% extends 'base.html' %}
+
+{% block title %}{{ material.title }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="/static/css/student.css">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="glass-container">
+        <nav aria-label="breadcrumb">
+            <ol class="breadcrumb">
+                <li class="breadcrumb-item"><a href="{% url 'student:dashboard' %}">Dashboard</a></li>
+                <li class="breadcrumb-item"><a href="{% url 'student:course_detail' course.id %}">{{ course.code }}</a></li>
+                <li class="breadcrumb-item">Module {{ module.order }}: {{ module.title }}</li>
+                <li class="breadcrumb-item active" aria-current="page">{{ material.title }}</li>
+            </ol>
+        </nav>
+        
+        <div class="material-header mb-4">
+            <h1>{{ material.title }}</h1>
+            <p class="text-muted">
+                <i class="fas fa-clock me-1"></i> Uploaded: {{ material.upload_date|date:"F d, Y" }}
+            </p>
+            
+            {% if material.description %}
+                <div class="material-description mt-3">
+                    <h5>Description:</h5>
+                    <p>{{ material.description }}</p>
+                </div>
+            {% endif %}
+        </div>
+        
+        <div class="file-viewer mb-4">
+            {% with ext=material.file.url|slice:"-3:" %}
+                {% if ext == 'pdf' %}
+                    <div class="embed-responsive" style="height: 600px;">
+                        <embed src="{{ material.file.url }}" type="application/pdf" width="100%" height="600px" />
+                    </div>
+                {% elif ext == 'jpg' or ext == 'png' or ext == 'gif' %}
+                    <div class="text-center">
+                        <img src="{{ material.file.url }}" alt="{{ material.title }}" class="img-fluid rounded">
+                    </div>
+                {% else %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i> This file type cannot be previewed directly in the browser. Please download the file to view its contents.
+                    </div>
+                {% endif %}
+            {% endwith %}
+        </div>
+        
+        <div class="text-center mb-4">
+            <a href="{{ material.file.url }}" class="btn btn-primary" download>
+                <i class="fas fa-download me-1"></i> Download File
+            </a>
+            <a href="{% url 'student:course_detail' course.id %}" class="btn btn-outline-secondary ms-2">
+                <i class="fas fa-arrow-left me-1"></i> Back to Course
+            </a>
+        </div>
+        
+        <!-- Related Materials -->
+        <div class="related-materials mt-4">
+            <h4>Other Materials in this Module</h4>
+            <div class="list-group">
+                {% for related_material in module.materials.all %}
+                    {% if related_material.id != material.id %}
+                        <a href="{% url 'student:view_material' related_material.id %}" class="list-group-item list-group-item-action">
+                            <div class="d-flex w-100 justify-content-between">
+                                <h5 class="mb-1">{{ related_material.title }}</h5>
+                                <small>{{ related_material.upload_date|date:"M d, Y" }}</small>
+                            </div>
+                            {% if related_material.description %}
+                                <p class="mb-1 text-truncate">{{ related_material.description }}</p>
+                            {% endif %}
+                        </a>
+                    {% endif %}
+                {% empty %}
+                    <div class="alert alert-info">
+                        <i class="fas fa-info-circle me-2"></i> No other materials in this module.
+                    </div>
+                {% endfor %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

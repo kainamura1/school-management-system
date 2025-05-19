@@ -1,0 +1,102 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}My Profile{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="/static/css/student.css">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <!-- Profile Header -->
+    <div class="glass-container">
+        <div class="profile-header">
+            {% if user.profile_picture %}
+                <img src="{{ user.profile_picture.url }}" alt="Profile Picture" class="profile-pic">
+            {% else %}
+                <div class="profile-pic d-flex align-items-center justify-content-center bg-primary text-white">
+                    <h1>{{ user.first_name|first|upper }}{{ user.last_name|first|upper }}</h1>
+                </div>
+            {% endif %}
+            <div>
+                <h1>{{ user.get_full_name|default:user.username }}</h1>
+                <p class="text-muted mb-2">Student</p>
+                <div class="mb-3">
+                    <span class="badge bg-info">{{ student_profile.department }}</span>
+                    <span class="badge bg-primary">Year {{ student_profile.year_of_study }}</span>
+                    <span class="badge bg-secondary">{{ student_profile.registration_number }}</span>
+                </div>
+                <p>
+                    <i class="fas fa-envelope me-2"></i> {{ user.email }}<br>
+                    {% if user.phone_number %}
+                        <i class="fas fa-phone me-2"></i> {{ user.phone_number }}<br>
+                    {% endif %}
+                    {% if user.date_of_birth %}
+                        <i class="fas fa-birthday-cake me-2"></i> {{ user.date_of_birth }}<br>
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-4">
+        <!-- Academic Summary -->
+        <div class="col-md-6">
+            <div class="glass-container">
+                <h3>Academic Summary</h3>
+                <div class="row text-center">
+                    <div class="col-4">
+                        <div class="p-3 mb-3 bg-light rounded">
+                            <h2 class="text-primary">{{ enrollment_count }}</h2>
+                            <p class="mb-0">Courses</p>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="p-3 mb-3 bg-light rounded">
+                            <h2 class="text-warning">{{ assignment_count }}</h2>
+                            <p class="mb-0">Assignments</p>
+                        </div>
+                    </div>
+                    <div class="col-4">
+                        <div class="p-3 mb-3 bg-light rounded">
+                            <h2 class="text-success">{{ completed_assignment_count }}</h2>
+                            <p class="mb-0">Completed</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-grid gap-2 mt-3">
+                    <a href="{% url 'student:course_list' %}" class="btn btn-outline-primary">View My Courses</a>
+                    <a href="{% url 'student:assignment_list' %}" class="btn btn-primary">My Assignments</a>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Edit Profile -->
+        <div class="col-md-6">
+            <div class="glass-container">
+                <h3>Edit Student Profile</h3>
+                <form method="post">
+                    {% csrf_token %}
+                    {{ form|crispy }}
+                    <div class="mt-3">
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-save me-1"></i> Save Changes
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+    
+    <!-- Account Settings Link -->
+    <div class="glass-container mt-4 text-center">
+        <h4>Account Settings</h4>
+        <p>Need to change your password or update your account information?</p>
+        <a href="{% url 'accounts:profile' %}" class="btn btn-outline-secondary">
+            <i class="fas fa-cog me-1"></i> Go to Account Settings
+        </a>
+    </div>
+</div>
+{% endblock %}

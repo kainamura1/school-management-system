@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load crispy_forms_tags %}
+
+{% block title %}Enroll in {{ course.title }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="/static/css/student.css">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="row">
+        <div class="col-md-8 offset-md-2">
+            <div class="glass-container">
+                <h2 class="mb-4">Enroll in Course</h2>
+                
+                <div class="course-info mb-4">
+                    <h3>{{ course.code }} - {{ course.title }}</h3>
+                    <div class="mb-3">
+                        <span class="badge bg-primary">{{ course.credits }} Credits</span>
+                    </div>
+                    <p class="lead">{{ course.description }}</p>
+                    
+                    {% if course.lecturers.exists %}
+                        <div class="mt-3">
+                            <strong>Taught by:</strong>
+                            <ul class="ps-4">
+                                {% for lecturer_course in course.lecturers.all %}
+                                    <li>{{ lecturer_course.lecturer.user.get_full_name|default:lecturer_course.lecturer.user.username }}</li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                    {% endif %}
+                </div>
+                
+                <div class="alert alert-info">
+                    <i class="fas fa-info-circle me-2"></i> Enrollment requests may require approval from the course instructor.
+                </div>
+                
+                <form method="post">
+                    {% csrf_token %}
+                    
+                    {{ form|crispy }}
+                    
+                    <div class="d-flex justify-content-between mt-4">
+                        <a href="{% url 'student:course_list' %}" class="btn btn-outline-secondary">
+                            <i class="fas fa-arrow-left me-1"></i> Back to Courses
+                        </a>
+                        <button type="submit" class="btn btn-success">
+                            <i class="fas fa-check-circle me-1"></i> Confirm Enrollment
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

@@ -1,0 +1,91 @@
+{% extends 'base.html' %}
+
+{% block title %}My Profile{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="glass-container">
+        <div class="profile-header">
+            {% if user.profile_picture %}
+                <img src="{{ user.profile_picture.url }}" alt="Profile Picture" class="profile-pic">
+            {% else %}
+                <div class="profile-pic d-flex align-items-center justify-content-center bg-primary text-white">
+                    <h1>{{ user.first_name|first|upper }}{{ user.last_name|first|upper }}</h1>
+                </div>
+            {% endif %}
+            <div>
+                <h1>{{ user.get_full_name|default:user.username }}</h1>
+                <p class="text-muted mb-2">Lecturer</p>
+                <div class="mb-3">
+                    <span class="badge bg-info">{{ lecturer_profile.department }}</span>
+                    <span class="badge bg-primary">Staff ID: {{ lecturer_profile.staff_id }}</span>
+                </div>
+                <p>
+                    <i class="fas fa-envelope me-2"></i> {{ user.email }}<br>
+                    {% if user.phone_number %}
+                        <i class="fas fa-phone me-2"></i> {{ user.phone_number }}<br>
+                    {% endif %}
+                    {% if user.date_of_birth %}
+                        <i class="fas fa-birthday-cake me-2"></i> {{ user.date_of_birth }}<br>
+                    {% endif %}
+                </p>
+                <a href="{% url 'accounts:profile' %}" class="btn btn-primary">Edit Profile</a>
+            </div>
+        </div>
+    </div>
+    
+    <div class="row mt-4">
+        <div class="col-md-6">
+            <div class="glass-container">
+                <h3>Teaching Summary</h3>
+                <div class="row text-center">
+                    <div class="col-6">
+                        <div class="p-3 mb-3 bg-light rounded">
+                            <h2 class="text-primary">{{ course_count }}</h2>
+                            <p class="mb-0">Courses</p>
+                        </div>
+                    </div>
+                    <div class="col-6">
+                        <div class="p-3 mb-3 bg-light rounded">
+                            <h2 class="text-success">{{ student_count }}</h2>
+                            <p class="mb-0">Students</p>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="d-grid gap-2 mt-3">
+                    <a href="{% url 'lecturer:course_list' %}" class="btn btn-outline-primary">View My Courses</a>
+                    <a href="{% url 'lecturer:create_course' %}" class="btn btn-primary">Create New Course</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="col-md-6">
+            <div class="glass-container">
+                <h3>Specialization</h3>
+                {% if lecturer_profile.specialization %}
+                    <p>{{ lecturer_profile.specialization }}</p>
+                {% else %}
+                    <div class="alert alert-info">
+                        No specialization information available. Please update your profile.
+                    </div>
+                {% endif %}
+                
+                <h4 class="mt-4">Office Information</h4>
+                {% if lecturer_profile.office_number %}
+                    <p><i class="fas fa-door-open me-2"></i> Office: {{ lecturer_profile.office_number }}</p>
+                {% else %}
+                    <div class="alert alert-info">
+                        No office information available. Please update your profile.
+                    </div>
+                {% endif %}
+                
+                {% if user.address %}
+                    <h4 class="mt-4">Address</h4>
+                    <p><i class="fas fa-map-marker-alt me-2"></i> {{ user.address }}</p>
+                {% endif %}
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}

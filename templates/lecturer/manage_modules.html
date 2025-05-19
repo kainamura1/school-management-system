@@ -1,0 +1,61 @@
+{% extends 'base.html' %}
+
+{% block title %}Manage Modules - {{ course.code }}{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>Manage Modules: {{ course.code }} - {{ course.title }}</h1>
+        <div>
+            <a href="{% url 'lecturer:course_detail' course.id %}" class="btn btn-outline-secondary me-2">
+                Back to Course
+            </a>
+            <a href="{% url 'lecturer:create_module' course.id %}" class="btn btn-primary">
+                <i class="fas fa-plus"></i> Add Module
+            </a>
+        </div>
+    </div>
+
+    <div class="glass-container">
+        {% if modules %}
+            <table class="table table-hover">
+                <thead class="table-light">
+                    <tr>
+                        <th width="10%">Order</th>
+                        <th width="30%">Title</th>
+                        <th width="35%">Description</th>
+                        <th width="15%">Materials</th>
+                        <th width="10%">Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for module in modules %}
+                        <tr>
+                            <td>{{ module.order }}</td>
+                            <td>{{ module.title }}</td>
+                            <td>{{ module.description|truncatewords:15 }}</td>
+                            <td>{{ module.materials.count }}</td>
+                            <td>
+                                <div class="btn-group btn-group-sm">
+                                    <a href="{% url 'lecturer:add_material' module.id %}" class="btn btn-outline-primary" title="Add Material">
+                                        <i class="fas fa-plus"></i>
+                                    </a>
+                                    <!-- Additional actions like edit/delete could go here -->
+                                </div>
+                            </td>
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        {% else %}
+            <div class="alert alert-info text-center py-4">
+                <h4>No modules have been created for this course yet.</h4>
+                <p>Modules help organize your course content into logical sections.</p>
+                <a href="{% url 'lecturer:create_module' course.id %}" class="btn btn-primary mt-3">
+                    Create Your First Module
+                </a>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}

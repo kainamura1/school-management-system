@@ -1,0 +1,172 @@
+{% extends 'base.html' %}
+
+{% block title %}My Assignments{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="/static/css/student.css">
+{% endblock %}
+
+{% block content %}
+<div class="container">
+    <div class="d-flex justify-content-between align-items-center mb-4">
+        <h1>My Assignments</h1>
+        <a href="{% url 'student:dashboard' %}" class="btn btn-outline-primary">
+            <i class="fas fa-arrow-left me-2"></i> Back to Dashboard
+        </a>
+    </div>
+    
+    <!-- Filter Controls -->
+    <div class="glass-container mb-4">
+        <div class="row">
+            <div class="col-md-6">
+                <h4>Filter Assignments</h4>
+                <div class="btn-group" role="group">
+                    <a href="{% url 'student:assignment_list' %}" 
+                       class="btn btn-outline-primary {% if not status_filter %}active{% endif %}">
+                        All
+                    </a>
+                    <a href="{% url 'student:assignment_list' %}?status=pending" 
+                       class="btn btn-outline-warning {% if status_filter == 'pending' %}active{% endif %}">
+                        Pending
+                    </a>
+                    <a href="{% url 'student:assignment_list' %}?status=graded" 
+                       class="btn btn-outline-success {% if status_filter == 'graded' %}active{% endif %}">
+                        Graded
+                    </a>
+                </div>
+            </div>
+            <div class="col-md-6 text-end">
+                <p class="text-muted">
+                    {% if status_filter == 'pending' %}
+                        Showing pending assignments
+                    {% elif status_filter == 'graded' %}
+                        Showing graded assignments
+                    {% else %}
+                        Showing all assignments
+                    {% endif %}
+                </p>
+            </div>
+        </div>
+    </div>
+
+    <div class="glass-container">
+        {% if page_obj %}
+            <div class="table-responsive">
+                <table class="table table-hover">
+                    <thead class="table-light">
+                        <tr>
+                            <th>Title</th>
+                            <th>Course</th>
+                            <th>Submitted</th>
+                            <th>Status</th>
+                            <th>Score</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for assignment in page_obj %}
+                            <tr>
+                                <td>{{ assignment.title }}</td>
+                                <td>
+                                    <a href="{% url 'student:course_detail' assignment.course.id %}">
+                                        {{ assignment.course.code }}
+                                    </a>
+                                </td>
+                                <td>{{ assignment.submitted_at|date:"M d, Y" }}</td>
+                                <td>
+                                    {% if assignment.score is not None %}
+                                        <span class="badge bg-success">Graded</span>
+                                    {% else %}
+                                        <span class="badge bg-warning">Pending</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    {% if assignment.score is not None %}
+                                        {{ assignment.score }}
+                                    {% else %}
+                                        -
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="btn-group btn-group-sm">
+                                        <a href="{{ assignment.submission.url }}" class="btn btn-outline-primary" target="_blank" title="View Submission">
+                                            <i class="fas fa-eye"></i>
+                                        </a>
+                                        <a href="{{ assignment.submission.url }}" class="btn btn-outline-secondary" download title="Download">
+                                            <i class="fas fa-download"></i>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination -->
+            {% if page_obj.has_other_pages %}
+                <nav aria-label="Assignments pagination" class="mt-4">
+                    <ul class="pagination justify-content-center">
+                        {% if page_obj.has_previous %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page=1{% if status_filter %}&status={{ status_filter }}{% endif %}">First</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.previous_page_number }}{% if status_filter %}&status={{ status_filter }}{% endif %}">Previous</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#">First</a>
+                            </li>
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#">Previous</a>
+                            </li>
+                        {% endif %}
+                        
+                        {% for num in page_obj.paginator.page_range %}
+                            {% if page_obj.number == num %}
+                                <li class="page-item active">
+                                    <a class="page-link" href="#">{{ num }}</a>
+                                </li>
+                            {% elif num > page_obj.number|add:'-3' and num < page_obj.number|add:'3' %}
+                                <li class="page-item">
+                                    <a class="page-link" href="?page={{ num }}{% if status_filter %}&status={{ status_filter }}{% endif %}">{{ num }}</a>
+                                </li>
+                            {% endif %}
+                        {% endfor %}
+                        
+                        {% if page_obj.has_next %}
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.next_page_number }}{% if status_filter %}&status={{ status_filter }}{% endif %}">Next</a>
+                            </li>
+                            <li class="page-item">
+                                <a class="page-link" href="?page={{ page_obj.paginator.num_pages }}{% if status_filter %}&status={{ status_filter }}{% endif %}">Last</a>
+                            </li>
+                        {% else %}
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#">Next</a>
+                            </li>
+                            <li class="page-item disabled">
+                                <a class="page-link" href="#">Last</a>
+                            </li>
+                        {% endif %}
+                    </ul>
+                </nav>
+            {% endif %}
+        {% else %}
+            <div class="alert alert-info text-center py-4">
+                <h4>No assignments found</h4>
+                <p>
+                    {% if status_filter == 'pending' %}
+                        You don't have any pending assignments.
+                    {% elif status_filter == 'graded' %}
+                        You don't have any graded assignments yet.
+                    {% else %}
+                        You haven't submitted any assignments yet.
+                    {% endif %}
+                </p>
+            </div>
+        {% endif %}
+    </div>
+</div>
+{% endblock %}
